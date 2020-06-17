@@ -13,7 +13,10 @@ class traact_virtualrunenv_generator(VirtualRunEnvGenerator):
         lib_paths = []
         for dep in self.conanfile.deps_cpp_info.deps:
             if(dep.startswith('traact') and (dep != 'traact_core')):
-                lib_paths.extend(self.conanfile.deps_cpp_info[dep].lib_paths)
+                if self.settings.os == "Windows":
+                    lib_paths.extend(self.conanfile.deps_cpp_info[dep].bin_paths)                
+                else:
+                    lib_paths.extend(self.conanfile.deps_cpp_info[dep].lib_paths)                
 
         return lib_paths
 
@@ -22,14 +25,15 @@ class traact_virtualrunenv_generator(VirtualRunEnvGenerator):
     def _add_traact_plugins(self):
 
         traact_plugins = ''
-        for plugin in self.traact_env_items():
+        for plugin in self.traact_env_items():            
             traact_plugins += '"%s":' % plugin
+
 
         traact_plugins = traact_plugins[:-1]
 
 
         self.env['TRAACT_PLUGIN_PATHS'] = self.traact_env_items()
-        #print(self.env)
+        print(self.env)
 
         return
 
