@@ -45,7 +45,7 @@ class traact_virtualrunenv_generator(VirtualRunEnvGenerator):
 
 
 class TraactGeneratorPackage(ConanFile):
-    name = "traact_virtualrunenv_generator"
+    name = "traact_run_env"
     version = "0.0.1"
     url = ""
     license = ""
