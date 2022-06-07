@@ -35,7 +35,8 @@ class TraactGeneratorPackage(ConanFile):
     name = "traact_run_env"
     version = "1.0.0"
     url = "https://github.com/traact/traact_run_env"
-    license = ""
+    license = "MIT"
+    description = "conan virtual env generator for traact plugin dependencies"
 
     settings = "os", "compiler", "build_type", "arch"
     compiler = "cppstd"
