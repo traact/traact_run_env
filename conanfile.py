@@ -3,52 +3,40 @@ from conans import ConanFile, CMake
 from conans.tools import os_info
 import os
 
-class traact_virtualrunenv_generator(VirtualRunEnvGenerator):
+
+class TraactVirtualRunEnvGenerator(VirtualRunEnvGenerator):
 
     def __init__(self, conanfile):
-        super(traact_virtualrunenv_generator, self).__init__(conanfile)
-        self.venv_name = "traactrunenv"
+        super(TraactVirtualRunEnvGenerator, self).__init__(conanfile)
+        self.venv_name = "traact_run_env"
 
     def traact_env_items(self):
         lib_paths = []
         for dep in self.conanfile.deps_cpp_info.deps:
-            if(dep.startswith('traact') and (dep != 'traact_core')):
+            if (dep.startswith('traact') and (dep != 'traact_core')):
                 if self.settings.os == "Windows":
-                    lib_paths.extend(self.conanfile.deps_cpp_info[dep].bin_paths)                
+                    lib_paths.extend(self.conanfile.deps_cpp_info[dep].bin_paths)
                 else:
-                    lib_paths.extend(self.conanfile.deps_cpp_info[dep].lib_paths)                
+                    lib_paths.extend(self.conanfile.deps_cpp_info[dep].lib_paths)
 
         return lib_paths
 
-
-
     def _add_traact_plugins(self):
-
-        traact_plugins = ''
-        for plugin in self.traact_env_items():            
-            traact_plugins += '"%s":' % plugin
-
-
-        traact_plugins = traact_plugins[:-1]
-
-
         self.env['TRAACT_PLUGIN_PATHS'] = self.traact_env_items()
-        print(self.env)
-
         return
-
 
     @property
     def content(self):
         self._add_traact_plugins()
-        return super(traact_virtualrunenv_generator, self).content
+        return super(TraactVirtualRunEnvGenerator, self).content
 
 
 class TraactGeneratorPackage(ConanFile):
     name = "traact_run_env"
-    version = "0.0.1"
-    url = ""
-    license = ""
+    version = "1.0.0"
+    url = "https://github.com/traact/traact_run_env"
+    license = "MIT"
+    description = "conan virtual env generator for traact plugin dependencies"
 
     settings = "os", "compiler", "build_type", "arch"
     compiler = "cppstd"
