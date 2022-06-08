@@ -1,5 +1,5 @@
 from conans.client.generators.virtualrunenv import VirtualRunEnvGenerator
-from conans import ConanFile, CMake
+from conans import ConanFile, CMake, tools
 from conans.tools import os_info
 import os
 
@@ -31,21 +31,101 @@ class TraactVirtualRunEnvGenerator(VirtualRunEnvGenerator):
         return super(TraactVirtualRunEnvGenerator, self).content
 
 
-class TraactGeneratorPackage(ConanFile):
-    name = "traact_run_env"
-    version = "1.0.0"
-    url = "https://github.com/traact/traact_run_env"
-    license = "MIT"
-    description = "conan virtual env generator for traact plugin dependencies"
+class TraactPackageCmake(object):
+    """
+    Base class for all traact libraries
+    """
+    generators = "cmake"
+    major_version = "0"
+    minor_version = "0"
+    patch_version = "0"
 
-    settings = "os", "compiler", "build_type", "arch"
-    compiler = "cppstd"
+    def set_version(self):
+        git = tools.Git(folder=self.recipe_folder)
+        branch_name = "%s" % (git.get_branch())
+        if branch_name == "main":
+            self.major_version = "999"
+            self.minor_version = "0"
+            self.patch_version = "0"
+        elif branch_name.startswith("releases/"):
+            version_string = branch_name[len("releases/"):]
+            self.major_version, self.minor_version, self.patch_version = version_string.split(".")
+
+        self.version = '.'.join(self.major_version, self.minor_version, self.patch_version)
+        print("set verion +++++++++++++++++++++++++")
+        print(self.version)
+
+    def traact_requires(self, lib_name, lib_version):
+        user_channel = "traact/stable"
+        if lib_version == "latest":
+            user_channel = "traact/latest"
+            lib_version = "999.0.0"
+        self.requires("{0}/{1}@{2}".format(lib_name, lib_version, user_channel))
+        print("traact_requires")
+        print("{0}/{1}@{2}".format(lib_name, lib_version, user_channel))
+
+    def _configure_cmake(self):
+        cmake = CMake(self)
+        cmake.verbose = True
+
+        def add_cmake_option(t_option, t_value):
+            var_name = "{}".format(t_option).upper()
+            value_str = "{}".format(t_value)
+            var_value = "ON" if value_str == 'True' else "OFF" if value_str == 'False' else value_str
+            cmake.definitions[var_name] = var_value
+
+        for option, value in self.options.items():
+            add_cmake_option(option, value)
+
+        cmake.configure()
+        return cmake
+
+    def build(self):
+        self._before_configure()
+        cmake = self._configure_cmake()
+        self._before_build(cmake)
+        cmake.build()
+        self._after_build()
+
+    def package(self):
+        cmake = self._configure_cmake()
+        self._before_package(cmake)
+        cmake.install()
+        self._after_package()
+
+    def package_info(self):
+        self.cpp_info.libs = [self.name]
+        self._after_package_info()
+
+    def _before_configure(self):
+        pass
+
+    def _before_build(self, cmake):
+        pass
+
+    def _after_build(self):
+        pass
+
+    def _before_package(self, cmake):
+        pass
+
+    def _after_package(self):
+        pass
+
+    def _after_package_info(self):
+        pass
+
+
+class TraactGeneratorPackage(TraactPackageCmake, ConanFile):
+    name = "traact_run_env"
+    url = "https://github.com/traact/traact_run_env.git"
+    license = "MIT"
+    description = "conan virtual env generator for traact libraries with some utils for conan and cmake setup"
+
+    exports_sources = "CMakeLists.txt", "cmake/*"
 
     def build(self):
         pass
 
     def package_info(self):
-        self.cpp_info.includedirs = []
-        self.cpp_info.libdirs = []
-        self.cpp_info.bindirs = []
-        self.cpp_info.srcdirs = []
+        self.cpp_info.libs = []
