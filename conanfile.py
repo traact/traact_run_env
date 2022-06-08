@@ -52,7 +52,6 @@ class TraactPackageCmake(object):
             self.major_version, self.minor_version, self.patch_version = version_string.split(".")
 
         self.version = '{0}.{1}.{2}'.format(self.major_version, self.minor_version, self.patch_version)
-        print("set verion +++++++++++++++++++++++++")
         print(self.version)
 
     def traact_requires(self, lib_name, lib_version):
