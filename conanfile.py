@@ -123,8 +123,5 @@ class TraactGeneratorPackage(TraactPackageCmake, ConanFile):
 
     exports_sources = "CMakeLists.txt", "cmake/*"
 
-    def build(self):
-        pass
-
     def package_info(self):
         self.cpp_info.libs = []
