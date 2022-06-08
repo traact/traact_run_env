@@ -51,7 +51,7 @@ class TraactPackageCmake(object):
             version_string = branch_name[len("releases/"):]
             self.major_version, self.minor_version, self.patch_version = version_string.split(".")
 
-        self.version = '.'.join(self.major_version, self.minor_version, self.patch_version)
+        self.version = '{0}.{1}.{2}'.format(self.major_version, self.minor_version, self.patch_version)
         print("set verion +++++++++++++++++++++++++")
         print(self.version)
 
