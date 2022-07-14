@@ -18,7 +18,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     # using Clang
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     # using GCC
-    add_compile_options(-fno-gnu-unique)
+    #add_compile_options(-fno-gnu-unique)
     # add_compile_options(-Wall -Wextra -Wshadow -Wnon-virtual-dtor -pedantic -Wcast-align -Wpedantic -Wmisleading-indentation -Wlogical-op -Wnull-dereference)
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
     # using Intel C++
@@ -28,3 +28,16 @@ endif ()
 
 # don't set version number so that (linux) only one file exists
 #set_target_properties(${CONAN_PACKAGE_NAME} PROPERTIES VERSION ${CONAN_PACKAGE_VERSION})
+
+include(CheckLanguage)
+check_language(CUDA)
+enable_language(CUDA)
+if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
+    set(CMAKE_CUDA_ARCHITECTURES 75)
+endif()
+
+if(NOT DEFINED CMAKE_CUDA_STANDARD)
+    set(CMAKE_CUDA_STANDARD 17)
+    set(CMAKE_CUDA_STANDARD_REQUIRED ON)
+
+endif()
