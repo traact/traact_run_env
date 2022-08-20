@@ -1,9 +1,9 @@
 
 
-generate_export_header(${CONAN_PACKAGE_NAME} EXPORT_FILE_NAME ${CMAKE_BINARY_DIR}/${CONAN_PACKAGE_NAME}/${CONAN_PACKAGE_NAME}_export.h)
+generate_export_header(${CONAN_PACKAGE_NAME} EXPORT_FILE_NAME ${CMAKE_BINARY_DIR}/traact/${CONAN_PACKAGE_NAME}_export.h)
 
-target_include_directories(${CONAN_PACKAGE_NAME} PUBLIC
-        ${CMAKE_BINARY_DIR}
+target_include_directories(${CONAN_PACKAGE_NAME} INTERFACE
+        $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}>
         PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/src
         )
